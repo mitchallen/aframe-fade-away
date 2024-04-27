@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <title>aframe fade away</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+        <a-assets>
+            <a-mixin id="ball" color="red" geometry="primitive: sphere; radius: 0.75;"></a-mixin>
+            <a-mixin id="fader"
+            animation="property: material.opacity; from:1; to:0; dur:5000; dir:alternate; loop:false; easing:linear;"></a-mixin>
+        </a-assets>
+        <a-entity id="rig" position="0 1.6 3">
+            <a-entity id="camera" camera look-controls></a-entity>
+        </a-entity>
+        <a-sky color="#333333"></a-sky>
+    </a-scene>
+    <script>
+        let sphereCount = 0;
+        setInterval(() => {
+          const sphere = document.createElement("a-entity");
+          sphere.setAttribute("geometry", "primitive", "sphere");
+          sphere.setAttribute('mixin', 'fader ball');
+          sphere.setAttribute("position", `${Math.random() * 2 - 1} ${Math.random() * 2 - 1} ${Math.random() * 2 - 1}`);
+          sphere.setAttribute("scale", "0.5 0.5 0.5");
+        //   sphere.setAttribute("animation", "ease", "easeInCubic");
+          sphere.addEventListener("animation-finished", () => {
+            console.log("DELETING NODE")
+            sphere.parentNode.removeChild(sphere);
+          });
+          document.querySelector("a-scene").appendChild(sphere);
+          sphereCount++;
+        }, 1000);
+      </script>
+  </body>
+</html>
