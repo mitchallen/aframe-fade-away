@@ -1,39 +1,72 @@
 <html>
-  <head>
-    <title>aframe fade away</title>
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  </head>
-  <body>
-    <a-scene>
-        <a-assets>
-            <a-mixin id="ball" geometry="primitive: sphere; radius: 0.2;"></a-mixin>
-            <a-mixin id="fader"
-            animation="property: material.opacity; from:1; to:0; dur:10000; loop:false; easing:linear;"></a-mixin>
-        </a-assets>
-        <a-entity id="rig" position="0 1.6 3">
-            <a-entity id="camera" camera look-controls></a-entity>
-        </a-entity>
-        <a-sky color="#333333"></a-sky>
-    </a-scene>
-    <script>
-        let sphereCount = 0;
-        setInterval(() => {
-          const radius = 1.0
-          const randomValue = () => Math.random() * 2 * radius - radius;
-          const sphere = document.createElement("a-entity");
-          // sphere.setAttribute("geometry", "primitive", "sphere");
-          sphere.setAttribute('mixin', 'fader ball');
-          sphere.setAttribute("position", `${randomValue()} ${randomValue()} ${randomValue()}`);
-          sphere.setAttribute("scale", "0.5 0.5 0.5");
-          sphere.setAttribute('material', 'color', '#39ff14')
-          sphere.setAttribute('transparent', 'true')
-          sphere.addEventListener("animationcomplete", () => {
-            // console.log("DELETING NODE")
-            sphere.parentNode.removeChild(sphere);
-          });
-          document.querySelector("a-scene").appendChild(sphere);
-          sphereCount++;
-        }, 1000);
-      </script>
-  </body>
+
+<head>
+  <title>aframe fade away</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+</head>
+
+<body>
+  <a-scene>
+    <a-assets>
+      <a-asset-item id="tetra-cube-obj" src="./models/tetra-cube.obj"></a-asset-item>
+      <a-asset-item id="tetrahedron-obj" src="./models/tetrahedron-centered.obj"></a-asset-item>
+      <a-asset-item id="colors-mtl" src="./models/colors.mtl"></a-asset-item>
+      <a-mixin id="cube5" src="#tetra-cube-obj" mtl="#colors-mtl"></a-mixin>
+      <a-mixin id="ball" geometry="primitive: sphere; radius: 0.2;"></a-mixin>
+      <a-mixin id="fader"
+        animation__fade="property: material.opacity; from:1; to:0; dur:2000; loop:false; easing:linear;"></a-mixin>
+      <a-mixin id="shrinker"
+        animation__shrinker="property: scale; from:1 1 1; to:0 0 0; dur:5000; loop:false; easing:linear;"></a-mixin>
+    </a-assets>
+    <a-entity id="rig" position="0 1.6 3">
+      <a-entity id="camera" camera look-controls></a-entity>
+    </a-entity>
+    <a-sky color="#333333"></a-sky>
+  </a-scene>
+  <script>
+    const OBJ_MAX = 400
+    let objCount = 0;
+    setInterval(() => {
+      if (objCount > OBJ_MAX) {
+        return;
+      }
+      // const radius = 1.0
+      const randomValue = (radius = 1.0) => Math.random() * 2 * radius - radius;
+      if (Math.random() > 0.5) {
+        const obj = document.createElement("a-entity");
+        // obj.setAttribute("geometry", "primitive", "sphere");
+        obj.setAttribute('mixin', 'fader shrinker ball');
+        obj.setAttribute("position", `${randomValue()} ${randomValue()} ${randomValue()}`);
+        // obj.setAttribute("rotation", `${randomValue(180)} ${randomValue(180)} ${randomValue(180)}`);
+        // obj.setAttribute("scale", "0.5 0.5 0.5");
+        obj.setAttribute('material', 'color', '#39ff14')
+        obj.setAttribute('transparent', 'true')
+        obj.addEventListener("animationcomplete", () => {
+          console.log("DELETING NODE", objCount)
+          objCount--;
+          console.log("DELETING NODE", objCount)
+          obj.parentNode.removeChild(obj);
+        });
+        document.querySelector("a-scene").appendChild(obj);
+        objCount++
+      } else {
+        const obj = document.createElement("a-obj-model");
+        obj.setAttribute('mixin', 'shrinker');
+        obj.setAttribute('src', '#tetrahedron-obj');
+        obj.setAttribute('mtl', '#colors-mtl');
+        obj.setAttribute("position", `${randomValue()} ${randomValue()} ${randomValue()}`);
+        obj.setAttribute("rotation", `${randomValue(180)} ${randomValue(180)} ${randomValue(180)}`);
+        obj.setAttribute("scale", "0.5 0.5 0.5");
+        obj.addEventListener("animationcomplete", () => {
+          // console.log("DELETING NODE")
+          objCount--;
+          obj.parentNode.removeChild(obj);
+        });
+        document.querySelector("a-scene").appendChild(obj);
+        objCount++;
+      }
+    }, 250);
+  </script>
+</body>
+
 </html>
