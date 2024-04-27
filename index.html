@@ -6,9 +6,9 @@
   <body>
     <a-scene>
         <a-assets>
-            <a-mixin id="ball" color="red" geometry="primitive: sphere; radius: 0.75;"></a-mixin>
+            <a-mixin id="ball" geometry="primitive: sphere; radius: 0.2;"></a-mixin>
             <a-mixin id="fader"
-            animation="property: material.opacity; from:1; to:0; dur:5000; dir:alternate; loop:false; easing:linear;"></a-mixin>
+            animation="property: material.opacity; from:1; to:0; dur:10000; loop:false; easing:linear;"></a-mixin>
         </a-assets>
         <a-entity id="rig" position="0 1.6 3">
             <a-entity id="camera" camera look-controls></a-entity>
@@ -18,14 +18,17 @@
     <script>
         let sphereCount = 0;
         setInterval(() => {
+          const radius = 1.0
+          const randomValue = () => Math.random() * 2 * radius - radius;
           const sphere = document.createElement("a-entity");
-          sphere.setAttribute("geometry", "primitive", "sphere");
+          // sphere.setAttribute("geometry", "primitive", "sphere");
           sphere.setAttribute('mixin', 'fader ball');
-          sphere.setAttribute("position", `${Math.random() * 2 - 1} ${Math.random() * 2 - 1} ${Math.random() * 2 - 1}`);
+          sphere.setAttribute("position", `${randomValue()} ${randomValue()} ${randomValue()}`);
           sphere.setAttribute("scale", "0.5 0.5 0.5");
-        //   sphere.setAttribute("animation", "ease", "easeInCubic");
-          sphere.addEventListener("animation-finished", () => {
-            console.log("DELETING NODE")
+          sphere.setAttribute('material', 'color', '#39ff14')
+          sphere.setAttribute('transparent', 'true')
+          sphere.addEventListener("animationcomplete", () => {
+            // console.log("DELETING NODE")
             sphere.parentNode.removeChild(sphere);
           });
           document.querySelector("a-scene").appendChild(sphere);
